@@ -1,0 +1,184 @@
+{
+  "kind": "build_request",
+  "title": "Aurex Paper Trading App (virtual investing simulator)",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Create the Aurex paper trading app as a virtual investing/trading simulator (paper trading only) where users can simulate investing with virtual money and no real broker integration.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "recent-messages"
+        ],
+        "quotes": [
+          "Yes paper trading app"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Users can sign in and use the app without any real-money or broker API connectivity.",
+        "All user-facing copy is in English and clearly states this is paper trading / simulated trading.",
+        "Core simulator features (cash balance, placing trades, portfolio updates, history) are available end-to-end."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Implement authentication and per-user data isolation using Internet Identity, so each user has their own virtual cash balance, holdings, and trade history.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "recent-messages"
+        ],
+        "quotes": [
+          "Yes paper trading app"
+        ]
+      },
+      "acceptanceCriteria": [
+        "User data (cash/holdings/history) is keyed by authenticated principal and is not visible to other users.",
+        "Unauthenticated users are prompted to sign in before accessing trading actions.",
+        "Sign in/out updates the UI state appropriately."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Backend: Add persistent paper-trading state and APIs in the single Motoko main actor to support: user profile (virtual cash), holdings/positions per symbol, trade/order history, and a simple price board (symbol -> latest price) used for fills and portfolio valuation.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "recent-messages"
+        ],
+        "quotes": [
+          "Yes paper trading app"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A new user receives a default starting virtual cash balance (configurable constant).",
+        "Holdings update correctly after buy/sell actions; cash decreases on buys and increases on sells.",
+        "Trade history entries are stored persistently and returned in reverse-chronological order.",
+        "A price board exists and is used consistently to compute order fill price and current portfolio value.",
+        "All state lives in the single actor (no additional services/canisters)."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Backend: Implement paper order placement endpoints for BUY and SELL market orders for a chosen symbol and quantity, validating inputs and enforcing constraints (e.g., sufficient cash for buys, sufficient holdings for sells).",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "recent-messages"
+        ],
+        "quotes": [
+          "Yes and log usme invest kar sake",
+          "Yes paper trading app"
+        ]
+      },
+      "acceptanceCriteria": [
+        "BUY fails with a clear error when user cash is insufficient.",
+        "SELL fails with a clear error when user position quantity is insufficient.",
+        "Quantity must be a positive integer; symbol must be non-empty.",
+        "On success, the response returns updated cash and updated position for the symbol."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Frontend: Build the main Aurex UI with pages/sections for Dashboard (account summary), Trade (place buy/sell), Portfolio (positions + P/L using latest prices), and History (executed paper trades).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "recent-messages"
+        ],
+        "quotes": [
+          "Yes paper trading app"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Users can navigate between Dashboard, Trade, Portfolio, and History without page reloads.",
+        "Trade page allows selecting/typing a symbol, entering quantity, and choosing BUY/SELL.",
+        "After placing an order, UI refreshes cash, holdings, and history using React Query invalidation/refetch.",
+        "Portfolio shows each symbol position quantity, average cost (if tracked), current price, and unrealized P/L (if applicable)."
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Frontend + Backend: Provide a simple way to manage symbol prices for the simulator (price board). If no external market data is used, allow setting/updating latest price per symbol from the app UI (restricted to the signed-in user unless an explicit admin concept is implemented).",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "recent-messages"
+        ],
+        "quotes": [
+          "Yes paper trading app"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Users can set/update the latest price for a symbol used for fills/valuation.",
+        "Placing an order uses the latest stored price for that symbol; if missing, the UI shows a clear prompt to set a price first (or backend returns a clear error).",
+        "Dashboard/Portfolio valuation uses the same stored prices."
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Add an About/Branding section for the app name \"Aurex\" and include the provided CEO name \"Harsh Gupta\" as plain, user-provided branding text (no claims of verification).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "recent-messages"
+        ],
+        "quotes": [
+          "Trading app name aurex ceo harsh gupta",
+          "Yes paper trading app"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The app displays the name \"Aurex\" prominently (e.g., header/sidebar).",
+        "An About section includes text like \"CEO: Harsh Gupta\" without stating or implying external verification."
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "text": "Define and apply a coherent visual theme for Aurex across the UI (colors, typography, spacing, component styling) with a distinct style suitable for a trading simulator; avoid blue/purple as the primary palette.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "recent-messages"
+        ],
+        "quotes": [
+          "Yes paper trading app"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A consistent color system and typography is used across all pages (navigation, cards, tables, forms).",
+        "The primary palette is not blue/purple.",
+        "The UI looks intentionally designed (not default component styling)."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not implement real-money investing, broker integrations (Angel One/Zerodha/Upstox), or any live trading connectivity.",
+    "Backend must remain a single Motoko actor in backend/main.mo (no additional backend services).",
+    "Do not modify files under frontend/immutablePaths (compose them instead).",
+    "Use English for all user-facing text."
+  ],
+  "nonGoals": [
+    "Real-time market data feeds, WebSockets, or streaming quotes.",
+    "External databases or third-party auth providers beyond Internet Identity.",
+    "Payments, deposits/withdrawals, KYC/AML flows, or any real investment acceptance."
+  ],
+  "imageRequirements": {
+    "required": [
+      "Aurex app logo mark, minimalist geometric bull/bear or candlestick motif, dark-friendly (aurex-logo.dim_512x512.png)",
+      "Subtle abstract trading background pattern, low-contrast, dark theme (aurex-bg.dim_1920x1080.png)"
+    ],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}

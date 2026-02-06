@@ -1,0 +1,120 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-05T14:00:09.480Z",
+  "summary": "Diff adds a new Motoko backend actor with user profiles, holdings/trade-related types, and a price board, plus a new React frontend shell with Internet Identity gating, navigation tabs, branding/about, a disclaimer banner, and React Query hooks/mutations for profiles, prices, holdings, portfolio valuation, and market orders. However, several BuildRequest requirements cannot be confirmed from the truncated backend and omitted frontend files, and at least one requirement appears contradicted (price updates are admin-only).",
+  "missing_requirements": [
+    {
+      "id": "REQ-3",
+      "requirement": "A new user receives a default starting virtual cash balance (configurable constant).",
+      "reason": "The backend profile initializer shown sets cashBalance to 0, while the frontend hard-codes a starting balance when saving a profile. This does not demonstrate a backend-side configurable default starting cash applied for new users.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/components/auth/ProfileSetupDialog.tsx"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "requirement": "Allow setting/updating latest price per symbol from the app UI (restricted to the signed-in user unless an explicit admin concept is implemented).",
+      "reason": "Backend updatePrice explicitly restricts updates to principals with #admin permission and traps otherwise. The BuildRequest calls for per-user restriction by default, and only mentions admin as optional if explicitly implemented; the diff does not show an admin concept being implemented/managed in the app UI.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/components/prices/PriceManager.tsx"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "requirement": "Trade history entries are stored persistently and returned in reverse-chronological order.",
+      "reason": "Trade history persistence and ordering are not verifiable from the provided truncated backend snippet; the frontend query simply returns profile.tradeHistory as-is.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/hooks/queries/useTradeHistory.ts"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "requirement": "Implement paper order placement endpoints for BUY/SELL market orders with validation (sufficient cash/holdings, positive integer quantity, non-empty symbol) and success response returning updated cash and updated position.",
+      "reason": "Frontend calls actor.placeMarketOrder, but the backend implementation and its validation/success response shape are not visible in the truncated backend snippet.",
+      "evidence": [
+        "frontend/src/hooks/mutations/usePlaceMarketOrder.ts",
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "requirement": "Portfolio shows each symbol position quantity, average cost (if tracked), current price, and unrealized P/L (if applicable).",
+      "reason": "PortfolioPage implementation is not included in the diff excerpt, so whether average cost/current price/P&L are displayed cannot be verified.",
+      "evidence": [
+        "frontend/src/App.tsx"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Admin-only authorization framework (AccessControl / MixinAuthorization) gating user/profile access and price updates.",
+      "reason": "The BuildRequest requires Internet Identity-based per-user data isolation, but does not request adding a separate admin permission system or requiring #admin for price updates; the admin concept is introduced and enforced in backend code.",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    },
+    {
+      "description": "Limit order functionality and openLimitOrders state (LimitOrder type, order IDs, remaining quantity, isActive).",
+      "reason": "The BuildRequest only asks for BUY/SELL market orders for paper trading; limit orders are not requested.",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    },
+    {
+      "description": "Virtual 'depositFunds' endpoint (cash top-up).",
+      "reason": "The BuildRequest describes a default starting virtual cash balance and paper trading; it does not request deposit/top-up endpoints (and explicitly lists payments/deposits/withdrawals as non-goals in the real-money sense).",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    },
+    {
+      "description": "Footer attribution link to caffeine.ai.",
+      "reason": "Not requested as part of branding or UI requirements.",
+      "evidence": [
+        "frontend/src/App.tsx"
+      ]
+    }
+  ],
+  "confidence": 0.63,
+  "changed_files": [
+    "all_files_summary.json",
+    "backend/main.mo",
+    "frontend-file-summaries.txt",
+    "frontend/index.css",
+    "frontend/index.html",
+    "frontend/src/App.tsx",
+    "frontend/src/components/DisclaimerBanner.tsx",
+    "frontend/src/components/auth/AuthGate.tsx",
+    "frontend/src/components/auth/LoginButton.tsx",
+    "frontend/src/components/auth/ProfileSetupDialog.tsx",
+    "frontend/src/components/branding/AboutSection.tsx",
+    "frontend/src/components/branding/AurexBrand.tsx",
+    "frontend/src/components/formatters/money.ts",
+    "frontend/src/components/navigation/MainNav.tsx",
+    "frontend/src/components/prices/PriceManager.tsx",
+    "frontend/src/hooks/mutations/usePlaceMarketOrder.ts",
+    "frontend/src/hooks/mutations/useSaveCallerUserProfile.ts",
+    "frontend/src/hooks/mutations/useUpdatePrice.ts",
+    "frontend/src/hooks/queries/useAllPrices.ts",
+    "frontend/src/hooks/queries/useCurrentUserProfile.ts",
+    "frontend/src/hooks/queries/useHoldings.ts",
+    "frontend/src/hooks/queries/usePortfolioValuation.ts",
+    "frontend/src/hooks/queries/usePrice.ts",
+    "frontend/src/hooks/queries/useTradeHistory.ts",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/src/index.css",
+    "frontend/src/main.tsx",
+    "frontend/src/pages/DashboardPage.tsx",
+    "frontend/src/pages/HistoryPage.tsx",
+    "frontend/src/pages/PortfolioPage.tsx",
+    "frontend/src/pages/TradePage.tsx",
+    "frontend/src/utils/urlParams.ts",
+    "frontend/tailwind.config.js",
+    "project_state.json"
+  ]
+}

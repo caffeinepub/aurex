@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Build a paper trading app named Aurex that lets users simulate investing/trading with virtual money (no real broker integration).",
+  "existing_features": [
+    {
+      "id": "feature-create-the-aurex-paper-trading-app-as-a-virtual-investing-trading-simulator-paper-trading-only-where-users-can-simulate-investing-with-virtual-money-and-no-real-broker-integration",
+      "title": "Create the Aurex paper trading app as a virtual investing/trading simulator (paper trading only) where users can simulate investing with virtual money and no real broker integration.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-authentication-and-per-user-data-isolation-using-internet-identity-so-each-user-has-their-own-virtual-cash-balance-holdings-and-trade-history",
+      "title": "Implement authentication and per-user data isolation using Internet Identity, so each user has their own virtual cash balance, holdings, and trade history.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-frontend-build-the-main-aurex-ui-with-pages-sections-for-dashboard-account-summary-trade-place-buy-sell-portfolio-positions-p-l-using-latest-prices-and-history-executed-paper-trades",
+      "title": "Frontend: Build the main Aurex UI with pages/sections for Dashboard (account summary), Trade (place buy/sell), Portfolio (positions + P/L using latest prices), and History (executed paper trades).",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-frontend-backend-provide-a-simple-way-to-manage-symbol-prices-for-the-simulator-price-board-if-no-external-market-data-is-used-allow-setting-updating-latest-price-per-symbol-from-the-app-ui-restricted-to-the-signed-in-user-unless-an-explicit-admin-concept-is-implemented",
+      "title": "Frontend + Backend: Provide a simple way to manage symbol prices for the simulator (price board). If no external market data is used, allow setting/updating latest price per symbol from the app UI (restricted to the signed-in user unless an explicit admin concept is implemented).",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-about-branding-section-for-the-app-name-aurex-and-include-the-provided-ceo-name-harsh-gupta-as-plain-user-provided-branding-text-no-claims-of-verification",
+      "title": "Add an About/Branding section for the app name \"Aurex\" and include the provided CEO name \"Harsh Gupta\" as plain, user-provided branding text (no claims of verification).",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-define-and-apply-a-coherent-visual-theme-for-aurex-across-the-ui-colors-typography-spacing-component-styling-with-a-distinct-style-suitable-for-a-trading-simulator-avoid-blue-purple-as-the-primary-palette",
+      "title": "Define and apply a coherent visual theme for Aurex across the UI (colors, typography, spacing, component styling) with a distinct style suitable for a trading simulator; avoid blue/purple as the primary palette.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Create Aurex paper trading app so users can simulate investing/trading with virtual money (paper trading), including basic order placement flow.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Backend: Add persistent paper-trading state and APIs in the single Motoko main actor to support: user profile (virtual cash), holdings/positions per symbol, trade/order history, and a simple price board (symbol -> latest price) used for fills and portfolio valuation.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Backend: Implement paper order placement endpoints for BUY and SELL market orders for a chosen symbol and quantity, validating inputs and enforcing constraints (e.g., sufficient cash for buys, sufficient holdings for sells).",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "status": "pending"
+    }
+  ],
+  "architectural_notes": [
+    "App will be a paper-trading (simulation) product; no real-money broker API integrations."
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Aurex app logo mark, minimalist geometric bull/bear or candlestick motif, dark-friendly (aurex-logo.dim_512x512.png)\n- Subtle abstract trading background pattern, low-contrast, dark theme (aurex-bg.dim_1920x1080.png)",
+  "generatedImages": [
+    {
+      "filename": "aurex-logo.dim_512x512.png",
+      "description": "Aurex app logo mark, minimalist geometric bull/bear or candlestick motif, dark-friendly",
+      "targetWidth": 512,
+      "targetHeight": 512
+    },
+    {
+      "filename": "aurex-bg.dim_1920x1080.png",
+      "description": "Subtle abstract trading background pattern, low-contrast, dark theme",
+      "targetWidth": 1920,
+      "targetHeight": 1080
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Aurex",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

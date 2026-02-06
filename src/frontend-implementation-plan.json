@@ -1,0 +1,243 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Aurex Paper Trading App (Frontend)",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Provide an end-to-end paper-trading simulator UI (virtual money only) with clear English copy stating simulated trading and no broker/real-money connectivity.",
+      "acceptanceCriteria": [
+        "Users can sign in and use the app without any real-money or broker API connectivity.",
+        "All user-facing copy is in English and clearly states this is paper trading / simulated trading.",
+        "Core simulator features (cash balance, placing trades, portfolio updates, history) are available end-to-end."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "create",
+          "description": "Create the Aurex app shell that clearly labels the experience as \"Paper Trading / Simulated Trading\" (no real broker integration) and composes the main authenticated experience (Dashboard, Trade, Portfolio, History). Use shadcn-ui layout primitives (e.g., Card, Separator) for consistent structure. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/DisclaimerBanner.tsx",
+          "operation": "create",
+          "description": "Add a reusable, prominent English disclaimer component (paper trading only, virtual money, no real broker/real-money connectivity) and render it in the main layout and/or key pages. Use shadcn-ui Alert (or similar) for styling consistency. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/formatters/money.ts",
+          "operation": "create",
+          "description": "Add formatting helpers for bigint amounts (cash/prices/P&L) to keep display consistent across Dashboard/Portfolio/History (virtual currency formatting; no real currency claims)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Implement Internet Identity sign-in/out UX and guard all trading data/actions so each signed-in user sees only their own state.",
+      "acceptanceCriteria": [
+        "User data (cash/holdings/history) is keyed by authenticated principal and is not visible to other users.",
+        "Unauthenticated users are prompted to sign in before accessing trading actions.",
+        "Sign in/out updates the UI state appropriately."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/auth/LoginButton.tsx",
+          "operation": "create",
+          "description": "Create a Login/Logout button using the existing useInternetIdentity hook; on logout, clear React Query cached data to avoid showing prior-user data. Use shadcn-ui Button for consistent styling. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/auth/AuthGate.tsx",
+          "operation": "create",
+          "description": "Create an auth guard wrapper that blocks access to simulator pages when unauthenticated, showing a clear sign-in prompt and the LoginButton. Use shadcn-ui Card for the gate screen. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/auth/ProfileSetupDialog.tsx",
+          "operation": "create",
+          "description": "Create a first-login profile setup dialog that prompts for a human-readable name (per authorization component guidance) when getCallerUserProfile() returns null; avoid showing principal IDs. Use shadcn-ui Dialog, Input, and Button. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/queries/useCurrentUserProfile.ts",
+          "operation": "create",
+          "description": "Add a React Query hook that calls getCallerUserProfile() and exposes loading state that accounts for actor readiness (per authorization component guidance) to prevent modal flash; used by ProfileSetupDialog. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/mutations/useSaveCallerUserProfile.ts",
+          "operation": "create",
+          "description": "Add a React Query mutation hook for saveCallerUserProfile(profile) and invalidation of the currentUserProfile query on success."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire authentication: render LoginButton in the header; wrap simulator content in AuthGate; mount ProfileSetupDialog when authenticated and the profile is missing; ensure UI updates cleanly on login/logout. Use shadcn-ui components for header controls. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Build the main Aurex UI sections for Dashboard, Trade, Portfolio, and History with client-side navigation and React Query refetch/invalidation after trades.",
+      "acceptanceCriteria": [
+        "Users can navigate between Dashboard, Trade, Portfolio, and History without page reloads.",
+        "Trade page allows selecting/typing a symbol, entering quantity, and choosing BUY/SELL.",
+        "After placing an order, UI refreshes cash, holdings, and history using React Query invalidation/refetch.",
+        "Portfolio shows each symbol position quantity, average cost (if tracked), current price, and unrealized P/L (if applicable)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/DashboardPage.tsx",
+          "operation": "create",
+          "description": "Create Dashboard section showing account summary (cash balance, total equity, holdings value, open positions value) using getPortfolioValuation() and relevant profile/holdings reads. Use shadcn-ui Card for summary tiles. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/TradePage.tsx",
+          "operation": "create",
+          "description": "Create Trade section with inputs for symbol and quantity and BUY/SELL actions using placeMarketOrder(). Include clear validation messages (English) and show the current stored price for the symbol. Use shadcn-ui Input, Select/RadioGroup, and Button. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/PortfolioPage.tsx",
+          "operation": "create",
+          "description": "Create Portfolio section listing positions from getHoldings() with current prices and valuation; compute per-symbol position value and unrealized P/L where possible given available data. Use shadcn-ui Table for positions. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/HistoryPage.tsx",
+          "operation": "create",
+          "description": "Create History section showing executed paper trades (from getProfile() or getCallerUserProfile(), depending on available fields) in reverse-chronological display as provided, with key columns (symbol, side, size, entry/exit, P/L). Use shadcn-ui Table. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/queries/usePortfolioValuation.ts",
+          "operation": "create",
+          "description": "Add a React Query hook for getPortfolioValuation() with a stable query key used across Dashboard/Portfolio."
+        },
+        {
+          "path": "frontend/src/hooks/queries/useHoldings.ts",
+          "operation": "create",
+          "description": "Add a React Query hook for getHoldings() used by Portfolio (and optionally Dashboard)."
+        },
+        {
+          "path": "frontend/src/hooks/queries/useTradeHistory.ts",
+          "operation": "create",
+          "description": "Add a React Query hook that reads the caller trade history (via getProfile()/getCallerUserProfile()) and normalizes it for HistoryPage rendering."
+        },
+        {
+          "path": "frontend/src/hooks/mutations/usePlaceMarketOrder.ts",
+          "operation": "create",
+          "description": "Add a React Query mutation hook for placeMarketOrder(symbol, orderType, quantity) that invalidates/refetches holdings, valuation, prices (if needed), and trade history queries on success."
+        },
+        {
+          "path": "frontend/src/components/navigation/MainNav.tsx",
+          "operation": "create",
+          "description": "Create in-app navigation (Dashboard/Trade/Portfolio/History) without full page reloads (e.g., Tabs or internal state + buttons). Use shadcn-ui Tabs or NavigationMenu. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire the new pages and navigation so all sections are reachable and not orphaned; ensure the default view is Dashboard and switching sections does not reload the page. Verify shadcn-ui component usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Expose UI controls to set/update simulator symbol prices (price board) and ensure trading/valuation uses those stored prices with clear prompts when missing.",
+      "acceptanceCriteria": [
+        "Users can set/update the latest price for a symbol used for fills/valuation.",
+        "Placing an order uses the latest stored price for that symbol; if missing, the UI shows a clear prompt to set a price first (or backend returns a clear error).",
+        "Dashboard/Portfolio valuation uses the same stored prices."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/prices/PriceManager.tsx",
+          "operation": "create",
+          "description": "Create a price management widget allowing the signed-in user to set/update the latest price for a symbol using updatePrice({symbol, price}). Show existing price (getPrice(symbol)) and provide clear guidance if no price exists yet. Use shadcn-ui Input and Button. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/queries/usePrice.ts",
+          "operation": "create",
+          "description": "Add a React Query hook for getPrice(symbol) to support Trade/PriceManager flows."
+        },
+        {
+          "path": "frontend/src/hooks/queries/useAllPrices.ts",
+          "operation": "create",
+          "description": "Add a React Query hook for getAllPrices() to support Portfolio valuation lookups and any price tables."
+        },
+        {
+          "path": "frontend/src/hooks/mutations/useUpdatePrice.ts",
+          "operation": "create",
+          "description": "Add a React Query mutation hook for updatePrice(price) that invalidates price queries and portfolio valuation queries on success."
+        },
+        {
+          "path": "frontend/src/pages/TradePage.tsx",
+          "operation": "modify",
+          "description": "Embed PriceManager into the Trade page and gate order placement when there is no stored price for the selected symbol (show a clear English prompt to set a price first, and also handle backend errors gracefully). Verify shadcn-ui component usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/PortfolioPage.tsx",
+          "operation": "modify",
+          "description": "Use stored prices (from getAllPrices()) to show current price and position valuation consistently; ensure totals align with the same price board data. Verify shadcn-ui component usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/DashboardPage.tsx",
+          "operation": "modify",
+          "description": "Ensure Dashboard numbers are consistent with the same valuation/price board source (getPortfolioValuation() and/or derived price map)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Add Aurex branding and an About section including \"CEO: Harsh Gupta\" as plain user-provided text without implying verification.",
+      "acceptanceCriteria": [
+        "The app displays the name \"Aurex\" prominently (e.g., header/sidebar).",
+        "An About section includes text like \"CEO: Harsh Gupta\" without stating or implying external verification."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/branding/AurexBrand.tsx",
+          "operation": "create",
+          "description": "Create a branding component that displays \"Aurex\" prominently and renders the generated logo asset. Use shadcn-ui for alignment/typography as needed. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/branding/AboutSection.tsx",
+          "operation": "create",
+          "description": "Create an About section component including plain text \"CEO: Harsh Gupta\" and a short description of the app as a paper trading simulator (no verification claims). Use shadcn-ui Card/Separator. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire AurexBrand into the header/sidebar area and place AboutSection within an existing required page/section (e.g., Dashboard footer or a modal/drawer) without adding a new top-level route. Verify shadcn-ui component usage instructions before implementing."
+        },
+        {
+          "path": "frontend/public/assets/generated/aurex-logo.dim_512x512.png",
+          "operation": "create",
+          "description": "Add the generated logo asset at the exact path frontend/public/assets/generated/aurex-logo.dim_512x512.png and wire it into AurexBrand."
+        }
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "summary": "Define and apply a coherent dark-friendly Aurex visual theme (not blue/purple primary) across navigation, cards, tables, and forms.",
+      "acceptanceCriteria": [
+        "A consistent color system and typography is used across all pages (navigation, cards, tables, forms).",
+        "The primary palette is not blue/purple.",
+        "The UI looks intentionally designed (not default component styling)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "create",
+          "description": "Create global styling entry with Aurex theme tokens (CSS variables used by Tailwind/shadcn) and base typography/spacing defaults; choose a non-blue/purple primary palette (e.g., amber/green) and dark-friendly background/foreground values. Reference the generated background image frontend/public/assets/generated/aurex-bg.dim_1920x1080.png in a global background utility/class applied by the app layout."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Adjust Tailwind theme extension if needed to support the Aurex palette and consistent typography/spacing across components (keep primary palette non-blue/purple)."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Apply the new theme consistently: ensure the main layout uses the dark theme, uses the background pattern, and standardizes page containers, card spacing, and table/form styling via shadcn-ui components. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/public/assets/generated/aurex-bg.dim_1920x1080.png",
+          "operation": "create",
+          "description": "Add the generated background asset at the exact path frontend/public/assets/generated/aurex-bg.dim_1920x1080.png and use it via the global/theme styling defined in frontend/src/index.css."
+        }
+      ]
+    }
+  ]
+}
